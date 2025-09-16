@@ -57,3 +57,7 @@ run generate_plot.py
 run generate_feature_plot.py
 
 ![Plot](feature_scores.png)
+
+run google_trends_plot.py
+
+![Plot](google_trends_plot.png)
