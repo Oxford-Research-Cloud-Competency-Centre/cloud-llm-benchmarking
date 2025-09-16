@@ -8,6 +8,7 @@ import pandas as pd
 import json
 import os
 from assistant_mapping import TECHNICAL_TO_DISPLAY, DISPLAY_TO_COLOR, GENERAL_LLM_TECHNICAL_TO_DISPLAY
+import argparse
 
 def load_accumulated_scores():
     """Load accumulated scores from JSON file if it exists."""
@@ -228,6 +229,39 @@ def create_plot(scores, raw_scores):
     plt.close()
     print(f"\nPlot saved as 'coding_assistants.png'")
 
+    # Export: correctness-only (red bars = raw correctness)
+    plt.figure(figsize=(14, 8))
+    plt.bar(names, raw_values, color='red', alpha=0.25)
+    plt.title('Code Evaluation (Correctness)', fontsize=16, fontweight='bold')
+    plt.xlabel('')
+    plt.ylabel('Score (0-100)', fontsize=12, fontweight='bold')
+    plt.xticks(range(len(names)), names, rotation=45, ha='right')
+    plt.ylim(0, 105)
+    plt.grid(axis='y', alpha=0.3, linestyle='--')
+    for i, raw_val in enumerate(raw_values):
+        y = min(raw_val + 0.5, 103.5)
+        plt.text(i, y, f"{raw_val:.1f}", ha='center', va='bottom', fontweight='bold')
+    plt.tight_layout()
+    plt.savefig('coding_assistants_correctness.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("Plot saved as 'coding_assistants_correctness.png'")
+
+    # Export: final scores only (no red overlay)
+    plt.figure(figsize=(14, 8))
+    plt.bar(names, adjusted_values, color=colors, alpha=0.8)
+    plt.title('Code Evaluation (Final score only)', fontsize=16, fontweight='bold')
+    plt.xlabel('')
+    plt.ylabel('Score (0-100)', fontsize=12, fontweight='bold')
+    plt.xticks(range(len(names)), names, rotation=45, ha='right')
+    plt.ylim(0, 100)
+    plt.grid(axis='y', alpha=0.3, linestyle='--')
+    for i, adj_val in enumerate(adjusted_values):
+        plt.text(i, adj_val + 0.5, f"{adj_val:.1f}", ha='center', va='bottom', fontweight='bold')
+    plt.tight_layout()
+    plt.savefig('coding_assistants_only_final.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("Plot saved as 'coding_assistants_only_final.png'")
+
     # General LLMs (not in mapping)
     general_llms = {k: v for k, v in scores.items() if k not in TECHNICAL_TO_DISPLAY}
     if general_llms:
@@ -294,40 +328,52 @@ def create_plot(scores, raw_scores):
         print(f"Plot saved as 'general_llms.png'")
 
 def main():
+    parser = argparse.ArgumentParser(description="Run or skip benchmarks and generate plots.")
+    parser.add_argument("--skip-benchmark", action="store_true", help="Skip running benchmarks and plot from accumulated_scores.json")
+    args = parser.parse_args()
+
     print("Loading accumulated scores...")
     accumulated_data = load_accumulated_scores()
-    
+
+    if args.skip_benchmark:
+        print("\nSkipping benchmark run. Using accumulated scores to generate plots...")
+        if not accumulated_data.get('scores'):
+            print("No accumulated scores found. Please run benchmarks at least once or provide accumulated_scores.json.")
+            return
+        create_plot(accumulated_data['scores'], accumulated_data['raw_scores'])
+        return
+
     print("\nRunning benchmarks...")
     print("(This may take a while...)\n")
-    
+
     output = run_benchmarks()
-    
+
     if output is None:
         print("\nFailed to run benchmarks or get output.")
         return
-    
+
     print("\n" + "="*60)
     print("ANALYZING RESULTS")
     print("="*60)
-    
+
     new_scores, new_raw_scores = parse_scores(output)
-    
+
     if new_scores:
         print(f"\nCurrent run scores:")
         for llm, score in sorted(new_scores.items(), key=lambda x: x[1], reverse=True):
             print(f"{llm}: {score:.2f}")
-        
+
         # Accumulate with existing data
         print(f"\nAccumulating with {accumulated_data['run_count']} previous runs...")
         accumulated_data = accumulate_scores(accumulated_data, new_scores, new_raw_scores)
-        
+
         # Save accumulated results
         save_accumulated_scores(accumulated_data)
-        
+
         print(f"\nFinal accumulated scores (after {accumulated_data['run_count']} runs):")
         for llm, score in sorted(accumulated_data['scores'].items(), key=lambda x: x[1], reverse=True):
             print(f"{llm}: {score:.2f}")
-        
+
         print("\nGenerating plot...")
         create_plot(accumulated_data['scores'], accumulated_data['raw_scores'])
     else:
