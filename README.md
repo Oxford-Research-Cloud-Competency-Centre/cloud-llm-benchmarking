@@ -44,7 +44,7 @@ Conduct the generation in an isolated environment to prevent LLMs from accessing
 
 ## Usage
 
-run generate_plot.py
+run generate_plot.py --skip-benchmark
 
 ![Plot](general_llms.png)
 

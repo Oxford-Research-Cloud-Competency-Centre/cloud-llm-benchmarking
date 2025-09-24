@@ -10,6 +10,19 @@ from datetime import datetime, timedelta
 import time
 from pytrends.request import TrendReq
 
+DISPLAY_LABELS = {
+    'vibe coding': 'Vibe Coding',
+    'cursor ai': 'Cursor AI',
+    'model context protocol': 'Model Context Protocol',
+    'github copilot': 'GitHub Copilot',
+    'ai code': 'AI Code',
+    'openai codex': 'OpenAI Codex',
+    'windsurf ai': 'Windsurf AI',
+}
+
+def to_display_label(keyword: str) -> str:
+    return DISPLAY_LABELS[keyword.lower()]
+
 def fetch_google_trends_data(keywords, geo='', timeframe='today 5-y'):
     """
     Fetch Google Trends data using pytrends library with consistent scaling.
@@ -93,7 +106,7 @@ def create_trends_plot(df, keywords):
     for i, keyword in enumerate(sorted_keywords):
         if keyword in df.columns:
             color = color_palette[i % len(color_palette)]
-            plt.plot(df.index, df[keyword], label=keyword, linewidth=2.5, color=color)
+            plt.plot(df.index, df[keyword], label=to_display_label(keyword), linewidth=2.5, color=color)
     
     # Customize the plot
     plt.title('Google Trends: Search Interest Over Time (Worldwide)', 
