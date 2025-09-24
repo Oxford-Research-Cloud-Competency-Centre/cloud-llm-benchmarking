@@ -249,7 +249,7 @@ def create_plot(scores, raw_scores):
     # Export: final scores only (no red overlay)
     plt.figure(figsize=(14, 8))
     plt.bar(names, adjusted_values, color=colors, alpha=0.8)
-    plt.title('Code Evaluation (Final score only)', fontsize=16, fontweight='bold')
+    plt.title('Code Evaluation (Final Score Only)', fontsize=16, fontweight='bold')
     plt.xlabel('')
     plt.ylabel('Score (0-100)', fontsize=12, fontweight='bold')
     plt.xticks(range(len(names)), names, rotation=45, ha='right')
@@ -257,6 +257,10 @@ def create_plot(scores, raw_scores):
     plt.grid(axis='y', alpha=0.3, linestyle='--')
     for i, adj_val in enumerate(adjusted_values):
         plt.text(i, adj_val + 0.5, f"{adj_val:.1f}", ha='center', va='bottom', fontweight='bold')
+    # Add color legend for assistants (same as combined chart, without correctness entry)
+    legend_handles = [plt.Rectangle((0,0),1,1, color=DISPLAY_TO_COLOR[name]) for name in names]
+    plt.legend(legend_handles, names, bbox_to_anchor=(1.05, 1), loc='upper left',
+              handleheight=2.5, handlelength=3, borderaxespad=0.)
     plt.tight_layout()
     plt.savefig('coding_assistants_only_final.png', dpi=300, bbox_inches='tight')
     plt.close()
