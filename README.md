@@ -61,3 +61,7 @@ run generate_feature_plot.py
 run google_trends_plot.py
 
 ![Plot](google_trends_plot.png)
+
+run generate_feature_weights_plot.py
+
+![Plot](feature_weights.png)
