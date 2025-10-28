@@ -60,10 +60,10 @@ def create_feature_weights_plot():
 
     # Color bars based on positive/negative values
     for bar, w in zip(bars, weights_signed):
-        bar.set_color('#666666' if w > 0 else '#999999')
+        bar.set_color('#777777' if w > 0 else '#999999')
 
     # Customize plot
-    plt.title('Feature Weights (Total = 100)', fontsize=14, pad=20)
+    plt.title('Feature Weights', fontsize=14, pad=20)
     plt.xlabel('Weight', fontsize=12)
 
     # Set y-axis labels
