@@ -10,21 +10,46 @@ def create_feature_plot():
         # Read the features.txt file
         df = pd.read_csv('features.txt', sep='\t')
         
-        # Define feature weights (positive = good, negative features award points when absent)
-        # Total: 100 points
-        feature_weights = {
-            'Open Source': 15,      # 8 * 1.82 ≈ 15
-            'Self-hostable': 13,    # 7 * 1.82 ≈ 13
-            'LLM Agnostic': 11,     # 6 * 1.82 ≈ 11
-            'Tab Completion': 9,    # 5 * 1.82 ≈ 9
-            'Chat': 7,              # 4 * 1.82 ≈ 7
-            'Modify Files': 7,      # 4 * 1.82 ≈ 7
-            'Run Commands': 5,      # 3 * 1.82 ≈ 5
-            'Select Context': 5,    # 3 * 1.82 ≈ 5
-            'Multi-IDE': 4,         # 2 * 1.82 ≈ 4
-            'Data Retained': 9,     # 5 * 1.82 ≈ 9 (awarded when "No")
-            'Data Re-used': 15      # 8 * 1.82 ≈ 15 (awarded when "No")
+        # Define base feature weights (positive = good, negative features are bad)
+        # We'll normalize absolute weights so the total available points = 100
+        base_feature_weights = {
+            'Open Source': 8,
+            'Self-hostable': 7,
+            'LLM Agnostic': 6,
+            'Tab Completion': 5,
+            'Chat': 4,
+            'Modify Files': 4,
+            'Run Commands': 3,
+            'Select Context': 3,
+            'Multi-IDE': 2,
+            'Data Retained': -5,   # awarded when "No"
+            'Data Re-used': -8,    # awarded when "No"
+            'IP Checks': 4         # awarded when "Yes" (compliance/IP safety)
         }
+
+        # Normalize to 100 total points using absolute values
+        total_abs = sum(abs(w) for w in base_feature_weights.values())
+        scaled = {k: abs(v) * (100.0 / total_abs) for k, v in base_feature_weights.items()}
+
+        # Round while preserving total = 100
+        items = sorted(scaled.items(), key=lambda kv: kv[1], reverse=True)
+        rounded = {k: int(v) for k, v in items}
+        remainder = 100 - sum(rounded.values())
+        if remainder != 0:
+            # Distribute remainder by fractional parts (largest fractions first)
+            fractions = sorted(((k, scaled[k] - int(scaled[k])) for k, _ in items), key=lambda kv: kv[1], reverse=True)
+            idx = 0
+            step = 1 if remainder > 0 else -1
+            while remainder != 0 and idx < len(fractions):
+                k = fractions[idx][0]
+                new_val = rounded[k] + step
+                if new_val >= 0:
+                    rounded[k] = new_val
+                    remainder -= step
+                idx = (idx + 1) % len(fractions)
+
+        # Final integer weights used for scoring
+        feature_weights = rounded
         
         # Calculate scores for each tool
         tool_scores = {}
@@ -93,7 +118,9 @@ def create_feature_plot():
         # Print feature weights for reference
         print("\nFeature weights used:")
         for feature, weight in feature_weights.items():
-            print(f"{feature}: {weight:+d}")
+            # Show sign for clarity: negative-weight features are awarded when "No"
+            sign = '-' if feature in ['Data Retained', 'Data Re-used'] else '+'
+            print(f"{feature}: {sign}{weight}")
         
     except Exception as e:
         print(f"Error creating feature plot: {e}")
