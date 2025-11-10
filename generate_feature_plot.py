@@ -21,10 +21,11 @@ def create_feature_plot():
             'Modify Files': 4,
             'Run Commands': 3,
             'Select Context': 3,
+            'Backend/SDK': 3,
             'Multi-IDE': 2,
             'Data Retained': -5,   # awarded when "No"
             'Data Re-used': -8,    # awarded when "No"
-            'IP Checks': 4         # awarded when "Yes" (compliance/IP safety)
+            'IP Checks': 4
         }
 
         # Normalize to 100 total points using absolute values
