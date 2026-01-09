@@ -277,7 +277,7 @@ def create_plot(scores, raw_scores):
         display_general_raw = {GENERAL_LLM_TECHNICAL_TO_DISPLAY.get(k, k): raw_scores[k] for k, v in general_llms.items()}
         general_raw_values = [display_general_raw[name] for name in sorted_general.keys()]
         
-        plt.figure(figsize=(14, 8))
+        plt.figure(figsize=(20, 8))
         names = list(sorted_general.keys())
         adjusted_values = list(sorted_general.values())
         
@@ -323,8 +323,9 @@ def create_plot(scores, raw_scores):
         plt.legend(
             [plt.Rectangle((0,0),1,1, color='red', alpha=0.2)] + legend_handles, 
             ['Code Correctness'] + names,
-            bbox_to_anchor=(1.05, 1), loc='upper left',
-            handleheight=2.5, handlelength=3, borderaxespad=0.
+            bbox_to_anchor=(1.02, 1), loc='upper left',
+            handleheight=1.5, handlelength=2, borderaxespad=0.,
+            fontsize=8
         )
         plt.tight_layout()
         plt.savefig('general_llms.png', dpi=300, bbox_inches='tight')

@@ -69,15 +69,19 @@ def display_models(grouped_models, search_term=None):
     
     return model_map
 
-def get_problem_folders():
-    """Get all problem folders in the current directory."""
-    return [d for d in os.listdir() if os.path.isdir(d) and not d.startswith('.')]
+def get_prompt_files():
+    """Get all .txt files from the PROMPTS directory."""
+    prompts_dir = "PROMPTS"
+    if not os.path.exists(prompts_dir):
+        return []
+    
+    return [f for f in os.listdir(prompts_dir) if f.endswith('.txt')]
 
-def read_prompt(problem_folder):
-    """Read the prompt.txt file from a problem folder."""
-    prompt_path = os.path.join(problem_folder, "prompt.txt")
+def read_prompt(prompt_filename):
+    """Read a prompt file from the PROMPTS directory."""
+    prompt_path = os.path.join("PROMPTS", prompt_filename)
     if not os.path.exists(prompt_path):
-        raise FileNotFoundError(f"prompt.txt not found in {problem_folder}")
+        raise FileNotFoundError(f"prompt not found at {prompt_path}")
     
     with open(prompt_path, 'r') as f:
         return f.read()
@@ -133,7 +137,7 @@ def generate_output(api_key, model_id, prompt):
             }
         ],
         "temperature": 0.7,
-        "max_tokens": 2000
+        "max_tokens": 4096
     }
 
     try:
@@ -177,7 +181,7 @@ def validate_model(api_key, model_id):
                 "content": "test"
             }
         ],
-        "max_tokens": 1
+        "max_tokens": 128
     }
 
     try:
@@ -235,20 +239,29 @@ def main():
     if not output_prefix:
         output_prefix = "model"
 
-    # Process problem folders
-    problem_folders = get_problem_folders()
-    print(f"\nFound {len(problem_folders)} problem folders")
+    # Process prompt files
+    prompt_files = get_prompt_files()
+    print(f"\nFound {len(prompt_files)} prompt files")
 
-    for folder in problem_folders:
-        print(f"\nProcessing {folder}...")
+    for prompt_file in prompt_files:
+        # Extract problem name from filename (remove .txt extension)
+        problem_name = prompt_file[:-4]  # Remove .txt extension
+        output_folder = problem_name
+        output_path = os.path.join(output_folder, f"{output_prefix}.py")
+        
+        if os.path.exists(output_path):
+            print(f"\nSkipping {problem_name} - output file already exists: {output_path}")
+            continue
+        
+        print(f"\nProcessing {problem_name}...")
         try:
-            prompt = read_prompt(folder)
+            prompt = read_prompt(prompt_file)
             print("Generating output...")
             output = generate_output(api_key, selected_model, prompt)
-            save_output(folder, output, output_prefix)
-            print(f"Output saved to {folder}/{output_prefix}.py")
+            save_output(output_folder, output, output_prefix)
+            print(f"Output saved to {output_folder}/{output_prefix}.py")
         except Exception as e:
-            print(f"Error processing {folder}: {str(e)}")
+            print(f"Error processing {problem_name}: {str(e)}")
 
 if __name__ == "__main__":
     main() 
