@@ -137,7 +137,7 @@ def generate_output(api_key, model_id, prompt):
             }
         ],
         "temperature": 0.7,
-        "max_tokens": 4096
+        "max_tokens": 16384
     }
 
     try:
@@ -155,6 +155,13 @@ def generate_output(api_key, model_id, prompt):
 
 def save_output(problem_folder, output, output_prefix):
     """Save the generated output to a file."""
+    # Save raw output as .txt in RAW_OUTPUT/problem_folder/ before extracting code
+    raw_output_dir = os.path.join("RAW_OUTPUT", problem_folder)
+    os.makedirs(raw_output_dir, exist_ok=True)
+    raw_output_path = os.path.join(raw_output_dir, f"{output_prefix}.txt")
+    with open(raw_output_path, 'w') as f:
+        f.write(output)
+    
     # Extract code from the response
     code = extract_code(output)
     
