@@ -1,5 +1,5 @@
-# Python cache directories
 __pycache__/
 *.py[cod]
 *$py.class 
 venv
+RAW_OUTPUT/

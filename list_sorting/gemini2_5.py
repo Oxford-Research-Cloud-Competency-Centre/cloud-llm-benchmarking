@@ -1,8 +1,10 @@
 import sys
 
 try:
-    numbers = list(map(int, sys.stdin.readline().split()))
-    numbers.sort()
-    print(*numbers)
+    input_line = sys.stdin.readline()
+    if input_line.strip():
+        numbers = list(map(int, input_line.split()))
+        numbers.sort()
+        print(*numbers)
 except (ValueError, IndexError):
     pass
