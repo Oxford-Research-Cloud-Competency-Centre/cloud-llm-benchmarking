@@ -1,32 +1,28 @@
-def solve_sat(n, m, clauses):
-    # Initialize an assignment with all variables as False (0)
-    assignment = [0] * n
+def solve_sat(N, M, clauses):
+    variables = [0] * N
+    while True:
+        satisfied = True
+        for clause in clauses:
+            if not any(variables[abs(x) - 1] ^ (x < 0) for x in clause[:-1]):
+                satisfied = False
+                break
 
-    # Function to flip the value of a variable in the assignment
-    def flip(var):
-        assignment[var - 1] = 1 - assignment[var - 1]
+        if satisfied:
+            print("SAT")
+            print(*variables)
+            break
 
-    # Try all possible assignments
-    for i in range(2**n):
-        # Convert the binary representation of i to a list of integers
-        binary_i = [int(digit) for digit in bin(i)[2:].zfill(n)]
+        for i in range(N):
+            variables[i] = 1 - variables[i]
 
-        # Update the assignment with the current binary representation
-        for j in range(n):
-            assignment[j] = binary_i[j]
+        if variables[0] == 0:
+            print("UNSAT")
+            break
 
-        # Check if the current assignment satisfies all clauses
-        if all(any(var in clause or -var in clause for var in range(1, n + 1)) for clause in clauses):
-            return "SAT\n" + " ".join(map(str, assignment))
-
-    return "UNSAT"
-
-
-# Read input
-n, m = map(int, input().split())
-clauses = []
-for _ in range(m):
-    clauses.append(list(map(int, input().split())))
-
-# Solve the SAT problem
-print(solve_sat(n, m, clauses))
+if __name__ == "__main__":
+    N, M = map(int, input().split())
+    clauses = []
+    for _ in range(M):
+        clause = list(map(int, input().split()))
+        clauses.append(clause)
+    solve_sat(N, M, clauses)

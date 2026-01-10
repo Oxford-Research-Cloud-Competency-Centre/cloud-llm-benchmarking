@@ -1,38 +1,41 @@
 import sys
 
-def rank_gf2(matrix):
-    rows = len(matrix)
-    cols = len(matrix[0])
+def rank_gf2(matrix, n, m):
     rank = 0
-    for col in range(cols):
-        pivot = -1
-        for row in range(rank, rows):
-            if matrix[row][col] == 1:
-                pivot = row
-                break
-        if pivot == -1:
+    col = 0
+    for row in range(n):
+        if col >= m + 1:
+            break
+        pivot = row
+        while pivot < n and matrix[pivot][col] == 0:
+            pivot += 1
+        if pivot == n:
+            col += 1
+            row -= 1
             continue
-        if pivot != rank:
-            matrix[rank], matrix[pivot] = matrix[pivot], matrix[rank]
-        for row in range(rows):
-            if row != rank and matrix[row][col] == 1:
-                for c in range(cols):
-                    matrix[row][c] ^= matrix[rank][c]
+        matrix[row], matrix[pivot] = matrix[pivot], matrix[row]
+        pivot_row = matrix[row]
+        for r in range(n):
+            if r != row and matrix[r][col] == 1:
+                for c in range(col, m + 1):
+                    matrix[r][c] ^= pivot_row[c]
         rank += 1
+        col += 1
     return rank
 
 def main():
     data = sys.stdin.read().strip().split()
     if not data:
         return
-    it = iter(data)
-    N = int(next(it))
-    M = int(next(it))
+    n, m = map(int, data[:2])
     matrix = []
-    for _ in range(N):
-        row = [int(next(it)) for _ in range(M + 1)]
+    idx = 2
+    for _ in range(n):
+        row = list(map(int, data[idx:idx + m + 1]))
         matrix.append(row)
-    print(rank_gf2(matrix))
+        idx += m + 1
+    rank = rank_gf2(matrix, n, m)
+    print(rank)
 
 if __name__ == "__main__":
     main()

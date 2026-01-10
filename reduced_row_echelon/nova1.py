@@ -1,46 +1,28 @@
-def matrix_rank_gf2(N, M, matrix):
+def matrix_rank_gf2(n, m, equations):
+    matrix = [list(map(int, eq.split())) for eq in equations]
     rank = 0
-    rows = N
-    cols = M + 1
-    
-    for i in range(rows):
-        if i >= rank:
-            j = i
-            while j < rows and matrix[j][i] == 0:
-                j += 1
-            if j == rows:
-                continue
-            
-            matrix[i], matrix[j] = matrix[j], matrix[i]
-            
-            for k in range(i + 1, rows):
-                xor_row = [matrix[k][l] ^ matrix[i][l] for l in range(cols)]
-                matrix[k] = xor_row
-            
-            for k in range(rows):
-                if k!= i and matrix[k][i] == 1:
-                    for l in range(i, cols):
-                        matrix[k][l] ^= matrix[i][l]
-            
-            rank += 1
-    
+    row = 0
+
+    for col in range(m):
+        while row < n and all(matrix[row][col] == 0 for row in range(row, n)):
+            col += 1
+            if col == m:
+                break
+        if row == n:
+            break
+        rank += 1
+        for i in range(row + 1, n):
+            if matrix[i][col] == 1:
+                matrix[i] = [a ^ b for a, b in zip(matrix[i], matrix[row])]
+        row += 1
+
     return rank
 
-# Read input
-import sys
-input = sys.stdin.read
-data = input().split()
-
-N = int(data[0])
-M = int(data[1])
-index = 2
-matrix = []
-
-for _ in range(N):
-    row = [int(data[index + i]) for i in range(M + 1)]
-    matrix.append(row)
-    index += M + 1
-
-# Calculate rank
-result = matrix_rank_gf2(N, M, matrix)
-print(result)
+# Example usage
+n, m = 3, 3
+equations = [
+    "1 0 1 1",
+    "0 1 1 0",
+    "1 1 0 1"
+]
+print(matrix_rank_gf2(n, m, equations))

@@ -1,38 +1,27 @@
-import sys
-
-def read_input():
-    data = sys.stdin.read().splitlines()
-    n_vars, n_clauses = map(int, data[0].split())
-    clauses = [tuple(map(int, line.split()[:-1])) for line in data[1:]]
-    return n_vars, n_clauses, clauses
-
-def solve_sat(n_vars, n_clauses, clauses):
-    def dfs(index, assignment):
-        if index == n_clauses:
+def satisfies_clause(clause, assignment):
+    for lit in clause:
+        if lit > 0 and assignment[lit - 1] == 1:
             return True
-        for var in clauses[index]:
-            if abs(var) not in assignment:
-                assignment[abs(var)] = var > 0
-                if dfs(index + 1, assignment):
-                    return True
-                assignment[abs(var)] = not assignment[abs(var)]
-        return False
+        if lit < 0 and assignment[-lit - 1] == 0:
+            return True
+    return False
 
-    assignment = {}
-    if dfs(0, assignment):
-        result = [assignment[i] for i in range(1, n_vars + 1)]
-        return "SAT", result
-    else:
-        return "UNSAT", None
+def sat_solver(n, m, clauses):
+    for assignment in range(2**n):
+        var_assignment = [((assignment >> i) & 1) for i in range(n)]
+        if all(satisfies_clause(clause, var_assignment) for clause in clauses):
+            return var_assignment
+    return None
 
 def main():
-    n_vars, n_clauses, clauses = read_input()
-    result, assignment = solve_sat(n_vars, n_clauses, clauses)
-    if result == "SAT":
-        print(result)
-        print(" ".join(map(str, assignment)))
+    n, m = map(int, input().split())
+    clauses = [list(map(int, input().split()[:-1])) for _ in range(m)]
+    result = sat_solver(n, m, clauses)
+    if result is None:
+        print("UNSAT")
     else:
-        print(result)
+        print("SAT")
+        print(" ".join(map(str, result)))
 
 if __name__ == "__main__":
     main()

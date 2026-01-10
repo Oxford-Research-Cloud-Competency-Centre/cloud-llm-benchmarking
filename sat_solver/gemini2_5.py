@@ -2,108 +2,70 @@ import sys
 
 def solve():
     """
-    Main function to read input, run the SAT solver, and print the output.
+    Solves the SAT problem by iterating through all possible variable assignments.
     """
     try:
-        line1 = sys.stdin.readline()
-        if not line1.strip():
-            print("UNSAT")
+        line = sys.stdin.readline()
+        if not line.strip():
             return
-        n, m = map(int, line1.split())
-        
-        clauses = []
-        for _ in range(m):
-            line = sys.stdin.readline()
-            if not line.strip():
-                continue
-            literals = list(map(int, line.split()))[:-1]
-            if literals:
-                clauses.append(literals)
-
-    except (ValueError, IndexError):
-        print("UNSAT")
+        N, M = map(int, line.split())
+    except (IOError, ValueError):
         return
 
-    assignment = [-1] * n
-    
-    solution = find_satisfying_assignment(clauses, assignment, 0, n)
+    # Reading clauses from standard input
+    clauses = []
+    for _ in range(M):
+        literals = list(map(int, sys.stdin.readline().strip().split()))[:-1]
+        clauses.append(literals)
 
-    if solution:
-        print("SAT")
-        print(*solution)
-    else:
-        print("UNSAT")
-
-def find_satisfying_assignment(clauses, assignment, var_index, n):
-    """
-    Recursively finds a satisfying assignment using a backtracking algorithm.
-    
-    Args:
-        clauses: The list of clauses in CNF.
-        assignment: The current partial assignment of variables (0, 1, or -1 for unassigned).
-        var_index: The index of the variable to assign next (0 to n-1).
-        n: The total number of variables.
-
-    Returns:
-        A list representing the satisfying assignment if found, otherwise None.
-    """
-    if var_index == n:
-        return assignment[:]
-
-    # Try assigning the current variable to 0 (False)
-    assignment[var_index] = 0
-    if is_consistent(clauses, assignment):
-        result = find_satisfying_assignment(clauses, assignment, var_index + 1, n)
-        if result is not None:
-            return result
-
-    # Backtrack and try assigning the current variable to 1 (True)
-    assignment[var_index] = 1
-    if is_consistent(clauses, assignment):
-        result = find_satisfying_assignment(clauses, assignment, var_index + 1, n)
-        if result is not None:
-            return result
-    
-    # Backtrack: un-assign the variable for parent recursive calls
-    assignment[var_index] = -1
-    
-    return None
-
-def is_consistent(clauses, assignment):
-    """
-    Checks if a partial assignment is consistent (i.e., does not make any clause false).
-    A clause is false only if all of its literals are assigned and evaluate to false.
-    
-    Args:
-        clauses: The list of clauses in CNF.
-        assignment: The current partial assignment.
-
-    Returns:
-        True if the assignment is consistent, False otherwise.
-    """
+    # Pre-process clauses into bitmasks for faster evaluation.
+    # For each clause, we create a mask for positive literals and one for negative ones.
+    processed_clauses = []
     for clause in clauses:
-        is_satisfied = False
-        all_literals_resolved = True
-        
+        pos_mask = 0
+        neg_mask = 0
         for literal in clause:
-            var_num = abs(literal)
-            var_idx = var_num - 1
-            
-            value = assignment[var_idx]
-            
-            if value == -1:
-                all_literals_resolved = False
-                continue
+            # Variables are 1-indexed, so we use abs(literal) - 1 for 0-indexed bit position.
+            var_index = abs(literal) - 1
+            if literal > 0:
+                pos_mask |= (1 << var_index)
+            else:
+                neg_mask |= (1 << var_index)
+        processed_clauses.append((pos_mask, neg_mask))
 
-            if (literal > 0 and value == 1) or (literal < 0 and value == 0):
-                is_satisfied = True
+    # Iterate through all 2^N possible assignments.
+    # Each integer 'i' from 0 to 2^N - 1 represents a unique assignment.
+    # The j-th bit of 'i' corresponds to the truth value of variable j+1.
+    for i in range(1 << N):
+        assignment_satisfies_all = True
+        for pos_mask, neg_mask in processed_clauses:
+            # A clause is satisfied if at least one of its literals is true.
+            
+            # Check if any positive literal is satisfied.
+            # A positive literal x_k is true if variable k is true (k-th bit of i is 1).
+            # This is true if the assignment 'i' has at least one '1' bit in common with pos_mask.
+            positive_part_satisfied = (i & pos_mask) != 0
+            
+            # Check if any negative literal is satisfied.
+            # A negative literal not(x_k) is true if variable k is false (k-th bit of i is 0).
+            # This is true if the assignment 'i' is missing at least one '1' bit that neg_mask has.
+            # If (i & neg_mask) == neg_mask, it means all corresponding variables are true,
+            # so all negative literals in this part are false.
+            negative_part_satisfied = (i & neg_mask) != neg_mask
+
+            if not (positive_part_satisfied or negative_part_satisfied):
+                assignment_satisfies_all = False
                 break
         
-        if not is_satisfied and all_literals_resolved:
-            return False
-            
-    return True
+        if assignment_satisfies_all:
+            print("SAT")
+            # Construct the assignment list (0s and 1s) from the integer 'i'.
+            assignment = [(i >> j) & 1 for j in range(N)]
+            print(*assignment)
+            return
+
+    # If the loop completes without finding a solution, the formula is unsatisfiable.
+    print("UNSAT")
 
 if __name__ == "__main__":
-    sys.setrecursionlimit(2000)
     solve()

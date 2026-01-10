@@ -1,12 +1,15 @@
-def is_balanced(seq):
+def is_balanced(s):
     stack = []
-    for char in seq:
-        if char in '({[':
+    matching = {')': '(', '}': '{', ']': '['}
+    for char in s:
+        if char in matching:
+            if not stack or stack.pop() != matching[char]:
+                return False
+        elif char in matching.values():
             stack.append(char)
-        elif not stack or stack.pop() != {')': '(', ']': '[', '}': '{'}(char):
-            return False
     return not stack
 
 n = int(input())
-seq = input()
-print('YES' if is_balanced(seq) else 'NO')
+s = input()
+result = "YES" if is_balanced(s) else "NO"
+print(result)

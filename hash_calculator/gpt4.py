@@ -1,17 +1,30 @@
 import hashlib
 import base64
 
-def hash_chain(s):
-    s = s.encode('utf-8')
-    s = hashlib.sha256(s).digest()
-    s = base64.b64encode(s)
-    s = hashlib.new('ripemd160', s).digest()
-    s = s.hex().upper().encode('utf-8')
-    s = hashlib.sha1(s).digest()
-    s = s.hex().lower().encode('utf-8')
-    s = hashlib.sha512(s).digest()[:32]
-    s = hashlib.md5(s).digest()
-    s = hashlib.sha384(s).hexdigest()
-    return s
+def calculate_hash_chain(S):
+    S = S.encode('utf-8')
 
-print(hash_chain("Hello, World!"))
+    S = hashlib.sha256(S).digest()
+
+    S = base64.b64encode(S)
+
+    S = hashlib.new('ripemd160', S).digest()
+
+    S = S.hex().upper()
+
+    S = hashlib.sha1(S.encode('utf-8')).digest()
+
+    S = S.hex().lower()
+
+    S = hashlib.sha512(S.encode('utf-8')).digest()
+
+    S = S[:32]
+
+    S = hashlib.md5(S).digest()
+
+    S = hashlib.sha384(S).hexdigest()
+
+    return S
+
+S = input().strip()
+print(calculate_hash_chain(S))

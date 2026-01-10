@@ -1,49 +1,59 @@
 import sys
-sys.setrecursionlimit(10**7)
-input = sys.stdin.readline
+sys.setrecursionlimit(2000000)
 
-def tarjan_scc(n, graph):
-    index =  * (n + 1)
-    lowlink =  * (n + 1)
-    on_stack = [False] * (n + 1)
-    stack = []
-    current_index = 1
+def kosaraju_scc_count(n, edges):
+    g = [[] for _ in range(n)]
+    gt = [[] for _ in range(n)]
+    for u, v in edges:
+        u -= 1
+        v -= 1
+        g[u].append(v)
+        gt[v].append(u)
+
+    visited = [False] * n
+    order = []
+
+    def dfs1(v):
+        visited[v] = True
+        for to in g[v]:
+            if not visited[to]:
+                dfs1(to)
+        order.append(v)
+
+    for i in range(n):
+        if not visited[i]:
+            dfs1(i)
+
+    visited = [False] * n
     scc_count = 0
 
-    def strongconnect(v):
-        nonlocal current_index, scc_count
-        index[v] = current_index
-        lowlink[v] = current_index
-        current_index += 1
-        stack.append(v)
-        on_stack[v] = True
+    def dfs2(v):
+        visited[v] = True
+        for to in gt[v]:
+            if not visited[to]:
+                dfs2(to)
 
-        for w in graph[v]:
-            if index[w] == 0:
-                strongconnect(w)
-                lowlink[v] = min(lowlink[v], lowlink[w])
-            elif on_stack[w]:
-                lowlink[v] = min(lowlink[v], index[w])
-
-        if lowlink[v] == index[v]:
-            while True:
-                w = stack.pop()
-                on_stack[w] = False
-                if w == v:
-                    break
+    for v in reversed(order):
+        if not visited[v]:
             scc_count += 1
-
-    for v in range(1, n + 1):
-        if index[v] == 0:
-            strongconnect(v)
+            dfs2(v)
 
     return scc_count
 
-N, M = map(int, input().split())
-graph = [[] for _ in range(N + 1)]
+def main():
+    data = sys.stdin.read().strip().split()
+    if not data:
+        return
+    it = iter(data)
+    n = int(next(it))
+    m = int(next(it))
+    edges = []
+    for _ in range(m):
+        u = int(next(it))
+        v = int(next(it))
+        edges.append((u, v))
+    result = kosaraju_scc_count(n, edges)
+    print(result)
 
-for _ in range(M):
-    u, v = map(int, input().split())
-    graph[u].append(v)
-
-print(tarjan_scc(N, graph))
+if __name__ == "__main__":
+    main()

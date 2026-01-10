@@ -1,43 +1,49 @@
 from collections import defaultdict
 
-def dfs(graph, v, visited, stack):
-    visited[v] = True
-    for i in graph[v]:
-        if visited[i] == False:
-            dfs(graph, i, visited, stack)
-    stack = stack.append(v)
-
-def transpose(graph):
-    g = defaultdict(list)
-    for i in graph:
-        for j in graph[i]:
-            g[j].append(i)
-    return g
-
-def dfs_for_transpose(graph, v, visited):
-    visited[v] = True
-    for i in graph[v]:
-        if visited[i] == False:
-            dfs_for_transpose(graph, i, visited)
-
-def count_scc(n, edges):
-    graph = defaultdict(list)
-    for edge in edges:
-        graph[edge[0]].append(edge[1])
-    visited =[False]*(n+1)
+def SCC(graph):
     stack = []
-    for i in range(1,n+1):
-        if visited[i]==False:
-            dfs(graph, i, visited, stack)
-    gr = transpose(graph)
-    visited =[False]*(n+1)
-    count = 0
-    while stack:
-        i = stack.pop()
-        if visited[i]==False:
-            dfs_for_transpose(gr, i, visited)
-            count += 1
-    return count
+    SCCs = 0
+    visited = [False] * (len(graph) + 1)
+    stackMember = [False] * (len(graph) + 1)
+    discovery = [float("Inf")] * (len(graph) + 1)
+    low = [float("Inf")] * (len(graph) + 1)
+    time = 0
 
-edges = [(1, 2), (2, 3), (3, 1), (4, 1)]
-print(count_scc(4, edges))
+    def SCCUtil(u):
+        nonlocal time
+        discovery[u] = time
+        low[u] = time
+        time += 1
+        stack.append(u)
+        stackMember[u] = True
+
+        for v in graph[u]:
+
+            if discovery[v] == float("Inf"):
+                SCCUtil(v)
+                low[u] = min(low[u], low[v])
+
+            elif stackMember[v] == True:
+                low[u] = min(low[u], discovery[v])
+
+        w = -1
+        if low[u] == discovery[u]:
+            nonlocal SCCs
+            while w != u:
+                w = stack.pop()
+                stackMember[w] = False
+            SCCs += 1
+
+    for i in range(1, len(graph) + 1):
+        if discovery[i] == float("Inf"):
+            SCCUtil(i)
+
+    return SCCs
+
+
+N, M = map(int, input().split())
+graph = defaultdict(list)
+for _ in range(M):
+    u, v = map(int, input().split())
+    graph[u].append(v)
+print(SCC(graph))

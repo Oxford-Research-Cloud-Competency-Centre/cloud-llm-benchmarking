@@ -93,26 +93,7 @@ def extract_code(text):
     if code_blocks:
         return code_blocks[0].strip()
     
-    # If no code blocks found, try to find any Python-like code
-    # This is a fallback and might not be perfect
-    lines = text.split('\n')
-    code_lines = []
-    in_code = False
-    
-    for line in lines:
-        # Skip lines that look like markdown or comments
-        if line.strip().startswith(('#', '```', '>', '*')):
-            continue
-        # Skip empty lines at the start
-        if not code_lines and not line.strip():
-            continue
-        # Add the line if it looks like code
-        if any(keyword in line for keyword in ['def ', 'class ', 'import ', 'from ', 'return ', 'if ', 'for ', 'while ']):
-            in_code = True
-        if in_code:
-            code_lines.append(line)
-    
-    return '\n'.join(code_lines).strip()
+    return text
 
 def generate_output(api_key, model_id, prompt):
     """Generate output using OpenRouter API."""
@@ -129,7 +110,7 @@ def generate_output(api_key, model_id, prompt):
         "messages": [
             {
                 "role": "system",
-                "content": "You are a Python programming expert. Provide only the Python code solution without any explanations or markdown formatting. The code should be complete and runnable."
+                "content": "You are a Python programming expert. Provide only the Python code solution without any explanations in a single code block starting with ```python. The code should be complete and runnable."
             },
             {
                 "role": "user",
@@ -137,7 +118,7 @@ def generate_output(api_key, model_id, prompt):
             }
         ],
         "temperature": 0.7,
-        "max_tokens": 16384
+        "max_tokens": 16384, #8192 # phi4 doesnt like 16K 
     }
 
     try:

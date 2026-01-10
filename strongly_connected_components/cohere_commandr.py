@@ -1,52 +1,35 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 
-def count_strongly_connected_components(num_vertices, num_edges, edges):
-    graph = defaultdict(list)
+def count_sccs(n, edges):
+    # Initialize adjacency list and visited set
+    adj_list = defaultdict(list)
+    visited = set()
+
+    # Build adjacency list
     for u, v in edges:
-        graph[u].append(v)
+        adj_list[u].append(v)
 
-    visited = [0] * num_vertices
-    stack = []
-    low = [0] * num_vertices
-    time = [0]
+    # Define a function to perform DFS
+    def dfs(node):
+        stack = [node]
+        while stack:
+            curr_node = stack.pop()
+            if curr_node not in visited:
+                visited.add(curr_node)
+                stack.extend(adj_list[curr_node])
 
-    def tarjan(v):
-        time[0] += 1
-        low[v] = time[0]
-        visited[v] = 1
-        stack.append(v)
+    # Start DFS from each unvisited node
+    scc_count = 0
+    for i in range(1, n + 1):
+        if i not in visited:
+            dfs(i)
+            scc_count += 1
 
-        for u in graph[v]:
-            if visited[u] == 0:
-                tarjan(u)
-                low[v] = min(low[v], low[u])
-            elif visited[u] == 1:
-                low[v] = min(low[v], low[u])
-
-        if low[v] == time[0]:
-            comp = []
-            while True:
-                w = stack.pop()
-                visited[w] = 2
-                comp.append(w)
-                if w == v:
-                    break
-            scc_count.append(comp)
-
-    scc_count = []
-    for i in range(1, num_vertices + 1):
-        if visited[i] == 0:
-            tarjan(i)
-
-    # Count the number of SCCs
-    return len(scc_count)
+    return scc_count
 
 # Read input
-num_vertices, num_edges = map(int, input().split())
-edges = []
-for _ in range(num_edges):
-    u, v = map(int, input().split())
-    edges.append((u, v))
+n, m = map(int, input().split())
+edges = [tuple(map(int, input().split())) for _ in range(m)]
 
-# Count the strongly connected components
-print(count_strongly_connected_components(num_vertices, num_edges, edges))
+# Count SCCs
+print(count_sccs(n, edges))

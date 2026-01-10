@@ -1,19 +1,25 @@
-def check_brackets(sequence):
-    bracket_map = {'(': ')', '[': ']', '{': '}'}
-    open_brackets = set(['(', '[', '{'])
-    stack = []
-    for bracket in sequence:
-        if bracket in open_brackets:
+from collections import deque
+
+def is_balanced(brackets):
+    stack = deque()
+    for bracket in brackets:
+        if bracket in "([{":
             stack.append(bracket)
-        elif stack and bracket_map[stack[-1]] == bracket:
-            stack.pop()
         else:
-            return "NO"
+            if not stack:
+                return "NO"
+            if bracket == ")" and stack[-1] != "(":
+                return "NO"
+            elif bracket == "]" and stack[-1] != "[":
+                return "NO"
+            elif bracket == "}" and stack[-1] != "{":
+                return "NO"
+            stack.pop()
     return "YES" if not stack else "NO"
 
-# Reading input
-N = int(input())
-sequence = input()
+# Read input
+n = int(input())
+brackets = input()
 
-# Checking and printing output
-print(check_brackets(sequence))
+# Check if balanced
+print(is_balanced(brackets))

@@ -1,3 +1,5 @@
+from functools import lru_cache
+from math import sqrt
 def is_prime(n):
     if n <= 1:
         return False
@@ -12,19 +14,34 @@ def is_prime(n):
         i += 6
     return True
 
-def main():
-    t = int(input())
-    for i in range(t):
-        n = int(input())
-        if n == 1:
-            print("NEITHER")
-        elif n == 2:
-            print("PRIME")
-        else:
-            if is_prime(n):
-                print("PRIME")
-            else:
-                print("COMPOSITE")
+@lru_cache(maxsize=None)
+def is_composite(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return True
+    i = 5
+    while i * i <= n:
+        if n % i == 0:
+            return True
+        i += 6
+    return False
 
-if __name__ == "__main__":
-    main()
+def solve(N):
+    if N == 1:
+        return "NEITHER"
+    if N <= 2:
+        return "PRIME"
+    if is_prime(N):
+        return "PRIME"
+    if is_composite(N):
+        return "COMPOSITE"
+    else:
+        return "NEITHER"
+
+tests = [int(input()) for _ in range(5)]
+
+for T, N in zip(tests, tests[1:]):
+    print(solve(N))

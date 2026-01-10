@@ -14,22 +14,22 @@ def reverse_graph(graph):
             reversed_graph[neighbor].append(node)
     return reversed_graph
 
-def dfs_scc(reversed_graph, node, visited, scc):
+def dfs_scc(graph, node, visited, scc):
     visited[node] = True
     scc.append(node)
-    for neighbor in reversed_graph[node]:
+    for neighbor in graph[node]:
         if not visited[neighbor]:
-            dfs_scc(reversed_graph, neighbor, visited, scc)
+            dfs_scc(graph, neighbor, visited, scc)
 
-def count_scc(graph):
-    visited = defaultdict(bool)
+def count_scc(graph, n):
+    visited = [False] * (n + 1)
     stack = []
-    for node in graph:
+    for node in range(1, n + 1):
         if not visited[node]:
             dfs(graph, node, visited, stack)
 
     reversed_graph = reverse_graph(graph)
-    visited = defaultdict(bool)
+    visited = [False] * (n + 1)
     scc_count = 0
     while stack:
         node = stack.pop()
@@ -39,11 +39,13 @@ def count_scc(graph):
             scc_count += 1
     return scc_count
 
+# Read input
 n, m = map(int, input().split())
 graph = defaultdict(list)
 for _ in range(m):
     u, v = map(int, input().split())
     graph[u].append(v)
 
-result = count_scc(graph)
+# Count strongly connected components
+result = count_scc(graph, n)
 print(result)

@@ -1,20 +1,22 @@
-def matrix_rank(A, b):
-    n = len(A)
-    m = len(A[0])
-    for i in range(m, n+m):
-        if A[i] == 0:
-            continue
-        j = i - m
-        while j >= 0 and A[j] == 0:
-            j -= m
-        if j < 0:
-            return i + m
-        A[j], A[i] = A[i], A[j]
-        b[j], b[i] = b[i] - b[j] * 2, b[j] * 2
-    return len(A) + m
-
-if __name__ == '__main__':
-    N, M = map(int, input().split())
-    A = [list(map(int, input().split())) for _ in range(N)]
-    b = [int(input())] * (N + 1)
-    print(matrix_rank(A, b))
+def rank_matrix_gf2(A, b):
+    # Convert matrix A and constant vector b to list of lists
+    A_list = [[int(a) for a in row] for row in zip(*A)]
+    b_list = [int(b)]
+    # Initialize matrix to rows of zeros
+    M = len(A_list)
+    rank = [0] * (M+1)
+    # Iterate over rows of A and b, and solve for x in each row
+    for i in range(M):
+        # Solve for x in this row
+        x = 0
+        for j in range(M):
+            if A_list[i][j]:
+                if A_list[i][j] > x:
+                    x = A_list[i][j]
+                else:
+                    A_list[i][j] = 0
+        # If x is not zero, add it to the solution
+        if x:
+            rank[i+1] = x
+    # Return the rank of the augmented matrix
+    return len(set(rank[:-1]))

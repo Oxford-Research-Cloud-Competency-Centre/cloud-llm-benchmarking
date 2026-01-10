@@ -1,48 +1,63 @@
-import sys
+from collections import defaultdict
+from typing import List, Tuple
 
-def dfs1(node, visited, graph, stack):
-    visited[node] = True
-    for neighbor in graph[node]:
-        if not visited[neighbor]:
-            dfs1(neighbor, visited, graph, stack)
-    stack.append(node)
+class Graph:
+    def __init__(self, vertices: int):
+        self.V = vertices
+        self.graph = defaultdict(list)
 
-def dfs2(node, visited, graph, component):
-    visited[node] = True
-    component.append(node)
-    for neighbor in graph[node]:
-        if not visited[neighbor]:
-            dfs2(neighbor, visited, graph, component)
+    def add_edge(self, u: int, v: int):
+        self.graph[u].append(v)
 
-def kosaraju(graph, num_nodes):
-    stack = []
-    visited = [False] * (num_nodes + 1)
-    for node in range(1, num_nodes + 1):
-        if not visited[node]:
-            dfs1(node, visited, graph, stack)
+    def dfs_util(self, v: int, visited: List[bool]):
+        visited[v] = True
+        for i in self.graph[v]:
+            if not visited[i]:
+                self.dfs_util(i, visited)
 
-    graph_transpose = {node: [] for node in range(1, num_nodes + 1)}
-    for node in graph:
-        for neighbor in graph[node]:
-            graph_transpose[neighbor].append(node)
+    def fill_order(self, v: int, visited: List[bool], stack: List[int]):
+        visited[v] = True
+        for i in self.graph[v]:
+            if not visited[i]:
+                self.fill_order(i, visited, stack)
+        stack.append(v)
 
-    visited = [False] * (num_nodes + 1)
-    scc_count = 0
-    while stack:
-        node = stack.pop()
-        if not visited[node]:
-            component = []
-            dfs2(node, visited, graph_transpose, component)
-            scc_count += 1
+    def reverse_graph(self) -> 'Graph':
+        g = Graph(self.V)
+        for i in self.graph:
+            for j in self.graph[i]:
+                g.add_edge(j, i)
+        return g
 
-    return scc_count
+    def count_strongly_connected_components(self) -> int:
+        stack = []
+        visited = [False] * self.V
 
+        for i in range(self.V):
+            if not visited[i]:
+                self.fill_order(i, visited, stack)
+
+        gr = self.reverse_graph()
+
+        visited = [False] * self.V
+        count = 0
+
+        while stack:
+            i = stack.pop()
+            if not visited[i]:
+                gr.dfs_util(i, visited)
+                count += 1
+
+        return count
+
+def count_scc(n: int, edges: List[Tuple[int, int]]) -> int:
+    g = Graph(n)
+    for u, v in edges:
+        g.add_edge(u, v)
+    return g.count_strongly_connected_components()
+
+# Example usage:
 if __name__ == "__main__":
-    input_data = sys.stdin.read().split('\n')
-    N, M = map(int, input_data[0].split())
-    graph = {node: [] for node in range(1, N + 1)}
-    for line in input_data[1:]:
-        u, v = map(int, line.split())
-        graph[u].append(v)
-
-    print(kosaraju(graph, N))
+    n, m = map(int, input().split())
+    edges = [tuple(map(int, input().split())) for _ in range(m)]
+    print(count_scc(n, edges))
