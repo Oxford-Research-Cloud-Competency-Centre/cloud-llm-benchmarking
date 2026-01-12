@@ -185,7 +185,7 @@ def generate_test_cases() -> List[Dict]:
     return test_cases
 
 # Current benchmarking script's filename
-benchmark_file = 'benchmarking.py'
+benchmark_file = os.path.basename(__file__)
 
 # List all .py files in the current directory except this one
 py_files = [f for f in os.listdir('.') if f.endswith('.py') and f != benchmark_file]

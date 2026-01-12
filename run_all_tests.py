@@ -7,9 +7,21 @@ import re
 from collections import defaultdict
 
 def find_benchmark_dirs():
-    """Find all directories containing benchmarking.py files."""
-    return [d for d in os.listdir('.')
-            if os.path.isdir(d) and os.path.exists(os.path.join(d, 'benchmarking.py'))]
+    """Find all directories that correspond to evaluation scripts in EVALUATION/."""
+    eval_dir = 'EVALUATION'
+    if not os.path.exists(eval_dir):
+        return []
+    
+    # Get all problem directories that have corresponding evaluation scripts
+    problem_dirs = []
+    for eval_file in os.listdir(eval_dir):
+        if eval_file.endswith('.py'):
+            problem_name = eval_file[:-3]  # Remove .py extension
+            problem_dir = os.path.join('.', problem_name)
+            if os.path.isdir(problem_dir):
+                problem_dirs.append(problem_name)
+    
+    return problem_dirs
 
 def parse_benchmark_output(output):
     """Parse the benchmark output to extract scores and times for each solution."""
@@ -99,10 +111,11 @@ def run_benchmarks():
         # Store current directory
         original_dir = os.getcwd()
         try:
-            # Change to benchmark directory and run
+            # Change to benchmark directory and run evaluation script
             os.chdir(os.path.join(root_dir, directory))
+            eval_script = os.path.join('..', 'EVALUATION', f'{directory}.py')
             result = subprocess.run(
-                [sys.executable, 'benchmarking.py', '--no-details'],
+                [sys.executable, eval_script, '--no-details'],
                 capture_output=True,
                 text=True,
                 check=True

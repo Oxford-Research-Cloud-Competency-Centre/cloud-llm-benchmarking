@@ -173,10 +173,17 @@ def generate_test_cases() -> List[Dict]:
         "description": "Tautology clauses - always satisfiable with any assignment"
     })
     
+    # Test case 11: Large UNSAT formula (16 variables, 40 clauses)
+    test_cases.append({
+        "input": "16 40\n1 12 0\n3 10 0\n-8 -9 0\n8 -16 -10 0\n14 6 0\n4 -2 -7 0\n15 -9 0\n-10 -14 0\n7 12 2 0\n8 14 0\n6 16 -15 0\n-6 9 0\n-9 15 11 0\n8 14 0\n-3 4 -10 0\n15 -3 -5 0\n-13 6 4 0\n-4 -3 0\n-3 7 15 0\n-4 -11 0\n4 5 -7 0\n-6 9 -2 0\n-5 -6 0\n11 -8 0\n-8 -1 4 0\n-3 13 9 0\n-9 16 0\n7 -12 0\n15 16 9 0\n8 10 0\n-8 -2 0\n-8 5 0\n-16 -4 0\n-4 2 0\n15 -14 -12 0\n13 -12 0\n-7 4 0\n9 -8 0\n-4 -1 -11 0\n6 7 0",
+        "output": "UNSAT",
+        "description": "Large UNSAT formula - 16 variables, 40 clauses, requires backtracking"
+    })
+    
     return test_cases
 
 # Current benchmarking script's filename
-benchmark_file = 'benchmarking.py'
+benchmark_file = os.path.basename(__file__)
 
 # List all .py files in the current directory except this one
 py_files = [f for f in os.listdir('.') if f.endswith('.py') and f != benchmark_file]
