@@ -2,6 +2,25 @@ import subprocess
 import os
 import time
 import sys
+import random
+
+# Generate a long random list (deterministic with fixed seed)
+random.seed(42)
+long_list = [random.randint(-1000, 1000) for _ in range(1000)]
+long_list_input = " ".join(map(str, long_list))
+long_list_expected = " ".join(map(str, sorted(long_list)))
+
+# Generate an even bigger list with large numbers (many digits)
+random.seed(123)
+very_long_list = [random.randint(-999999999, 999999999) for _ in range(5000)]
+very_long_list_input = " ".join(map(str, very_long_list))
+very_long_list_expected = " ".join(map(str, sorted(very_long_list)))
+
+# Generate an extremely large list with very large numbers
+random.seed(456)
+huge_list = [random.randint(-999999999999, 999999999999) for _ in range(20000)]
+huge_list_input = " ".join(map(str, huge_list))
+huge_list_expected = " ".join(map(str, sorted(huge_list)))
 
 # Define test cases (input, expected output)
 test_cases = [
@@ -11,7 +30,10 @@ test_cases = [
     ("5 5 5 5", "5 5 5 5"),
     ("-3 -1 -2", "-3 -2 -1"),
     ("100 1", "1 100"),
-    ("8 6 7 5 3 0 9", "0 3 5 6 7 8 9")
+    ("8 6 7 5 3 0 9", "0 3 5 6 7 8 9"),
+    (long_list_input, long_list_expected),
+    (very_long_list_input, very_long_list_expected),
+    (huge_list_input, huge_list_expected)
 ]
 
 # Current benchmarking script's filename

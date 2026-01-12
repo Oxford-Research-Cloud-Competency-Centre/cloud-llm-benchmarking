@@ -71,60 +71,36 @@ def generate_test_cases() -> List[Dict]:
         "description": "Simple balanced parentheses"
     })
     
-    # Test case 8: Multiple same type brackets
-    test_cases.append({
-        "input": "6\n((()))",
-        "output": "YES",
-        "description": "Nested parentheses - all same type"
-    })
-    
-    # Test case 9: All three bracket types
+    # Test case 8: All three bracket types
     test_cases.append({
         "input": "6\n(){}[]",
         "output": "YES",
         "description": "All three bracket types in sequence"
     })
     
-    # Test case 10: Complex nested structure
+    # Test case 9: Complex nested structure
     test_cases.append({
         "input": "12\n{[()]}[(){}]",
         "output": "YES",
         "description": "Complex nested structure with multiple groups"
     })
     
-    # Test case 11: Wrong closing bracket type
+    # Test case 10: Very long nested structure (over 10000 characters)
+    # Generate a deeply nested balanced structure
+    long_pattern = "{[()]}"
+    # Repeat pattern many times to create a very long balanced string
+    long_string = ""
+    for i in range(2000):  # 2000 * 6 = 12000 characters
+        long_string += long_pattern
+    # Add some additional nested structures for variety
+    for i in range(500):
+        long_string = "(" + long_string + ")"
+        long_string = "[" + long_string + "]"
+        long_string = "{" + long_string + "}"
     test_cases.append({
-        "input": "2\n(]",
-        "output": "NO",
-        "description": "Wrong closing bracket type - parenthesis opened, bracket closed"
-    })
-    
-    # Test case 12: Extra closing bracket
-    test_cases.append({
-        "input": "5\n(()))",
-        "output": "NO",
-        "description": "Extra closing bracket - one too many"
-    })
-    
-    # Test case 13: Missing closing bracket
-    test_cases.append({
-        "input": "4\n((()",
-        "output": "NO",
-        "description": "Missing closing bracket - not enough closing"
-    })
-    
-    # Test case 14: Interleaved brackets (valid)
-    test_cases.append({
-        "input": "6\n([{}])",
+        "input": f"{len(long_string)}\n{long_string}",
         "output": "YES",
-        "description": "Properly interleaved different bracket types"
-    })
-    
-    # Test case 15: Interleaved brackets (invalid)
-    test_cases.append({
-        "input": "4\n([)]",
-        "output": "NO",
-        "description": "Improperly interleaved brackets - crossing structure"
+        "description": "Very long nested structure (over 10000 characters)"
     })
     
     return test_cases

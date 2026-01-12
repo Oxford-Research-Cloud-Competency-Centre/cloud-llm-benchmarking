@@ -119,6 +119,13 @@ def generate_test_cases() -> List[Dict]:
         "description": "Very large 50x40 matrix - rank 35"
     })
     
+    # Test case 10: Full column rank matrix (more rows than columns, rank equals columns)
+    test_cases.append({
+        "input": "8 5\n1 0 0 0 0 1\n0 1 0 0 0 0\n0 0 1 0 0 1\n0 0 0 1 0 1\n0 0 0 0 1 0\n1 1 0 0 0 1\n0 1 1 0 0 1\n1 0 1 1 0 1",
+        "output": "5",
+        "description": "8x5 matrix with full column rank - rank 5"
+    })
+    
     return test_cases
 
 # Current benchmarking script's filename

@@ -162,11 +162,11 @@ def parse_scores(output):
                 
                 # Get raw score from collected data
                 raw_correct = raw_score_data.get(llm_name, {}).get('correct', 0)
-                raw_total = raw_score_data.get(llm_name, {}).get('total',68)  # Default to 70 if not found
+                raw_total = raw_score_data.get(llm_name, {}).get('total', 70)  # Default to 70 if not found
                 
                 # Normalize adjusted score to 0-100 scale, but keep raw score as actual points
-                normalized_adjusted = (adjusted_score / 68) * 100  # Maximum score is 70
-                raw_score = (raw_correct / 68) * 100  # Raw score as percentage of total possible
+                normalized_adjusted = (adjusted_score / raw_total) * 100  # Normalize by actual total
+                raw_score = (raw_correct / raw_total) * 100  # Raw score as percentage of total possible
                 
                 scores[llm_name] = normalized_adjusted
                 raw_scores[llm_name] = raw_score

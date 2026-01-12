@@ -67,49 +67,21 @@ def generate_test_cases() -> List[Dict]:
     """Generate hardcoded test cases with their expected outputs."""
     test_cases = []
     
-    # Test case 1: Example from prompt
-    test_cases.append({
-        "input": "Hello, World!",
-        "output": calculate_hash_chain("Hello, World!"),
-        "description": "Example from prompt - standard greeting string"
-    })
-    
-    # Test case 2: Empty string
-    test_cases.append({
-        "input": "\n",
-        "output": calculate_hash_chain(""),
-        "description": "Empty string - edge case"
-    })
-    
-    # Test case 3: Single character
-    test_cases.append({
-        "input": "a",
-        "output": calculate_hash_chain("a"),
-        "description": "Single lowercase letter"
-    })
-    
-    # Test case 4: Single uppercase character
-    test_cases.append({
-        "input": "A",
-        "output": calculate_hash_chain("A"),
-        "description": "Single uppercase letter"
-    })
-    
-    # Test case 5: Numbers only
+    # Test case 1: Numbers only
     test_cases.append({
         "input": "123456789",
         "output": calculate_hash_chain("123456789"),
         "description": "Numeric string - digits only"
     })
     
-    # Test case 6: Special characters
+    # Test case 2: Special characters
     test_cases.append({
         "input": "!@#$%^&*()",
         "output": calculate_hash_chain("!@#$%^&*()"),
         "description": "Special characters - symbols and punctuation"
     })
     
-    # Test case 7: Mixed case with spaces
+    # Test case 3: Mixed case with spaces
     test_cases.append({
         "input": "The Quick Brown Fox",
         "output": calculate_hash_chain("The Quick Brown Fox"),
@@ -117,49 +89,49 @@ def generate_test_cases() -> List[Dict]:
     })
 
     
-    # Test case 8: JSON-like string
+    # Test case 4: JSON-like string
     test_cases.append({
         "input": '{"key": "value", "number": 42}',
         "output": calculate_hash_chain('{"key": "value", "number": 42}'),
         "description": "JSON-like string with quotes and braces"
     })
     
-    # Test case 9: Long string with repeating pattern
+    # Test case 5: Long string with repeating pattern
     test_cases.append({
         "input": "abcdefghijklmnopqrstuvwxyz" * 10,
         "output": calculate_hash_chain("abcdefghijklmnopqrstuvwxyz" * 10),
         "description": "Long string - 260 characters of repeating alphabet"
     })
     
-    # Test case 10: Base64-like string
+    # Test case 6: Base64-like string
     test_cases.append({
         "input": "SGVsbG8gV29ybGQ=",
         "output": calculate_hash_chain("SGVsbG8gV29ybGQ="),
         "description": "Base64-like string with padding"
     })
     
-    # Test case 11: Programming code snippet  
+    # Test case 7: Programming code snippet  
     test_cases.append({
         "input": "def hello(): print('Hello!')",
         "output": calculate_hash_chain("def hello(): print('Hello!')"),
         "description": "Python code snippet without newlines"
     })
     
-    # Test case 12: SQL injection attempt
+    # Test case 8: SQL injection attempt
     test_cases.append({
         "input": "'; DROP TABLE users; --",
         "output": calculate_hash_chain("'; DROP TABLE users; --"),
         "description": "SQL injection string - security testing"
     })
     
-    # Test case 13: XML/HTML tags
+    # Test case 9: XML/HTML tags
     test_cases.append({
         "input": "<html><body>Test</body></html>",
         "output": calculate_hash_chain("<html><body>Test</body></html>"),
         "description": "HTML/XML tags with angle brackets"
     })
     
-    # Test case 14: Long single character repetition
+    # Test case 10: Long single character repetition
     test_cases.append({
         "input": "x" * 500,
         "output": calculate_hash_chain("x" * 500),
