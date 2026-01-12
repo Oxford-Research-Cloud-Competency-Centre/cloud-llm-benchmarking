@@ -182,6 +182,83 @@ def generate_test_cases() -> List[Dict]:
         "output": "\n".join(result for _, result in cases)
     })
     
+    # Test case 6: Edge cases and boundary values
+    cases = [
+        (1, "NEITHER"),
+        (2, "PRIME"),
+        (3, "PRIME"),
+        (4, "COMPOSITE"),
+        (10**18 - 1, "COMPOSITE" if not is_prime(10**18 - 1) else "PRIME"),
+        (10**18, "COMPOSITE"),
+        (10**9, "COMPOSITE"),
+        (10**6, "COMPOSITE")
+    ]
+    test_cases.append({
+        "input": f"{len(cases)}\n" + "\n".join(str(n) for n, _ in cases),
+        "output": "\n".join(result for _, result in cases)
+    })
+    
+    # Test case 7: Very large primes and composites
+    cases = [
+        generate_test_case("large_prime"),
+        generate_test_case("large_prime"),
+        generate_test_case("large_semiprimes"),
+        generate_test_case("large_prime"),
+        generate_test_case("large_semiprimes")
+    ]
+    test_cases.append({
+        "input": f"{len(cases)}\n" + "\n".join(str(n) for n, _ in cases),
+        "output": "\n".join(result for _, result in cases)
+    })
+    
+    # Test case 8: Numbers with many small factors
+    cases = [
+        generate_test_case("small_factors"),
+        generate_test_case("small_factors"),
+        generate_test_case("perfect_power"),
+        generate_test_case("small_factors"),
+        generate_test_case("perfect_power")
+    ]
+    test_cases.append({
+        "input": f"{len(cases)}\n" + "\n".join(str(n) for n, _ in cases),
+        "output": "\n".join(result for _, result in cases)
+    })
+    
+    # Test case 9: Special numbers (Mersenne-like, Fermat-like, etc.)
+    # Generate numbers of form 2^k - 1 or 2^k + 1
+    special_cases = []
+    for _ in range(5):
+        k = random.randint(10, 60)  # 2^10 to 2^60
+        form = random.choice(["minus", "plus"])
+        if form == "minus":
+            n = 2**k - 1
+        else:
+            n = 2**k + 1
+        # Ensure n is in valid range
+        if n > 10**18:
+            n = random.randint(10**15, 10**18)
+        special_cases.append((n, "PRIME" if is_prime(n) else "COMPOSITE"))
+    test_cases.append({
+        "input": f"{len(special_cases)}\n" + "\n".join(str(n) for n, _ in special_cases),
+        "output": "\n".join(result for _, result in special_cases)
+    })
+    
+    # Test case 10: Comprehensive mix
+    cases = [
+        generate_test_case("small_prime"),
+        generate_test_case("carmichael"),
+        generate_test_case("large_prime"),
+        generate_test_case("perfect_power"),
+        generate_test_case("large_semiprimes"),
+        generate_test_case("small_factors"),
+        generate_test_case("large_prime"),
+        generate_test_case()
+    ]
+    test_cases.append({
+        "input": f"{len(cases)}\n" + "\n".join(str(n) for n, _ in cases),
+        "output": "\n".join(result for _, result in cases)
+    })
+    
     return test_cases
 
 # Current benchmarking script's filename

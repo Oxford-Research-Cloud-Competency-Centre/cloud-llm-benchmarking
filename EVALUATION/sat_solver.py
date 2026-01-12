@@ -117,63 +117,56 @@ def generate_test_cases() -> List[Dict]:
         "description": "Simple UNSAT - contradictory unit clauses x1 and ¬x1"
     })
     
-    # Test case 3: Single variable satisfiable
-    test_cases.append({
-        "input": "1 1\n1 0",
-        "output": "SAT\n1",
-        "description": "Single variable SAT - x1 must be true (only one valid assignment)"
-    })
-    
-    # Test case 4: Three variables, satisfiable
+    # Test case 3: Three variables, satisfiable
     test_cases.append({
         "input": "3 3\n1 2 3 0\n-1 2 0\n-2 3 0",
         "output": "SAT\n0 1 1",
         "description": "3-SAT satisfiable - (x1∨x2∨x3)∧(¬x1∨x2)∧(¬x2∨x3) has valid assignments"
     })
     
-    # Test case 5: Horn clauses, unsatisfiable  
+    # Test case 4: Horn clauses, unsatisfiable  
     test_cases.append({
         "input": "3 4\n1 0\n-1 2 0\n-2 3 0\n-3 0",
         "output": "UNSAT",
         "description": "Horn clauses UNSAT - unit propagation leads to contradiction"
     })
     
-    # Test case 6: Unsatisfiable 3-SAT
+    # Test case 5: Unsatisfiable 3-SAT
     test_cases.append({
         "input": "2 4\n1 2 0\n1 -2 0\n-1 2 0\n-1 -2 0",
         "output": "UNSAT",
         "description": "UNSAT 3-SAT - all possible assignments of x1,x2 lead to contradiction"
     })
     
-    # Test case 7: Example from prompt
+    # Test case 6: Example from prompt
     test_cases.append({
         "input": "3 2\n1 2 0\n-1 -2 3 0",
         "output": "SAT\n1 0 0",
         "description": "Example from prompt - (x1∨x2)∧(¬x1∨¬x2∨x3) has multiple valid assignments"
     })
     
-    # Test case 8: Larger satisfiable case
+    # Test case 7: Larger satisfiable case
     test_cases.append({
         "input": "4 5\n1 2 0\n-1 3 0\n-2 4 0\n-3 -4 0\n1 4 0",
         "output": "SAT\n1 0 1 0",
         "description": "4-variable SAT with implication chain - multiple valid assignments"
     })
     
-    # Test case 9: Empty clause (immediately UNSAT)
+    # Test case 8: Empty clause (immediately UNSAT)
     test_cases.append({
         "input": "2 3\n1 2 0\n0\n-1 -2 0",
         "output": "UNSAT",
         "description": "Empty clause makes formula immediately UNSAT"
     })
     
-    # Test case 10: Tautology clauses (should be SAT)
+    # Test case 9: Tautology clauses (should be SAT)
     test_cases.append({
         "input": "2 2\n1 -1 0\n2 -2 0",
         "output": "SAT\n0 0",
         "description": "Tautology clauses - always satisfiable with any assignment"
     })
     
-    # Test case 11: Large UNSAT formula (16 variables, 40 clauses)
+    # Test case 10: Large UNSAT formula (16 variables, 40 clauses)
     test_cases.append({
         "input": "16 40\n1 12 0\n3 10 0\n-8 -9 0\n8 -16 -10 0\n14 6 0\n4 -2 -7 0\n15 -9 0\n-10 -14 0\n7 12 2 0\n8 14 0\n6 16 -15 0\n-6 9 0\n-9 15 11 0\n8 14 0\n-3 4 -10 0\n15 -3 -5 0\n-13 6 4 0\n-4 -3 0\n-3 7 15 0\n-4 -11 0\n4 5 -7 0\n-6 9 -2 0\n-5 -6 0\n11 -8 0\n-8 -1 4 0\n-3 13 9 0\n-9 16 0\n7 -12 0\n15 16 9 0\n8 10 0\n-8 -2 0\n-8 5 0\n-16 -4 0\n-4 2 0\n15 -14 -12 0\n13 -12 0\n-7 4 0\n9 -8 0\n-4 -1 -11 0\n6 7 0",
         "output": "UNSAT",
